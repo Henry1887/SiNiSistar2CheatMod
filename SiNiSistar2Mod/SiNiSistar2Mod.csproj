@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+	<Optimize>true</Optimize>
+	<DebugType>none</DebugType>
+	<DebugSymbols>false</DebugSymbols>
+	<Deterministic>true</Deterministic>
+	<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+	<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<GenerateDependencyFile>false</GenerateDependencyFile>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>disable</Nullable>
+	<WarningsAsErrors>false</WarningsAsErrors>
+	<GenerateDocumentationFile>false</GenerateDocumentationFile>
+	<OutputPath>D:\Tools\Games\SiNiSistar2_v1_0_1\WIN\BepInEx\plugins\</OutputPath> <!-- Change to your desired Build Path-->
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>Libs\0Harmony.dll</HintPath>
+	  <Private>false</Private>
+    </Reference>
+    <Reference Include="BepInEx.Core">
+      <HintPath>Libs\BepInEx.Core.dll</HintPath>
+	  <Private>false</Private>
+    </Reference>
+    <Reference Include="BepInEx.Unity.Common">
+      <HintPath>Libs\BepInEx.Unity.Common.dll</HintPath>
+		<Private>false</Private>
+    </Reference>
+    <Reference Include="BepInEx.Unity.IL2CPP">
+      <HintPath>Libs\BepInEx.Unity.IL2CPP.dll</HintPath>
+		<Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Runtime">
+      <HintPath>Libs\Il2CppInterop.Runtime.dll</HintPath>
+		<Private>false</Private>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib">
+      <HintPath>Libs\Il2Cppmscorlib.dll</HintPath>
+		<Private>false</Private>
+	</Reference>
+	<Reference Include="SiNiSistar2">
+		<HintPath>Libs\SiNiSistar2.dll</HintPath>
+		<Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>Libs\Unity.InputSystem.dll</HintPath>
+		<Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>Libs\UnityEngine.CoreModule.dll</HintPath>
+	  <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>Libs\UnityEngine.IMGUIModule.dll</HintPath>
+		<Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>
