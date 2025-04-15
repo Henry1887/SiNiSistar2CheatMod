@@ -1,6 +1,7 @@
 ﻿using SiNiSistar2.Obj;
 using UnityEngine.InputSystem;
 using UnityEngine;
+using SiNiSistar2.Manager;
 
 namespace SiNiSistar2Mod
 {
@@ -13,6 +14,8 @@ namespace SiNiSistar2Mod
 
         private int selectedAbnormalIndex = 1;
         private Array abnormalEnumValues;
+
+        private bool SceneSelectUIOpen = false;
 
         private void Start()
         {
@@ -91,6 +94,13 @@ namespace SiNiSistar2Mod
                 selectedAbnormalIndex++;
                 if (selectedAbnormalIndex > abnormalEnumValues.Length - 1) selectedAbnormalIndex = 1;
             }
+
+            if (Keyboard.current.f12Key.wasPressedThisFrame)
+            {
+                SceneSelectUIOpen = !SceneSelectUIOpen;
+                ManagerList.Debugger.DebugSceneSelectUI.gameObject.SetActive(SceneSelectUIOpen);
+                ManagerList.Debugger.DebugSceneSelectUI.enabled = SceneSelectUIOpen;
+            }
         }
 
         private void OnGUI()
@@ -112,6 +122,7 @@ namespace SiNiSistar2Mod
             }
             GUI.Label(new Rect(10, 130, 500, 20), $"F9: ({(AbnormalType)abnormalEnumValues.GetValue(selectedAbnormalIndex)}) {(hasState ? "Enabled" : "Disabled")} - F10 Scroll Down - F11 Scroll Up");
             GUI.Label(new Rect(10, 150, 500, 20), $"Note: Abnormal Statuses are location dependent if they can be added.");
+            GUI.Label(new Rect(10, 170, 500, 20), $"F12: Toggle Scene Select UI - {(SceneSelectUIOpen ? "Enabled" : "Disabled")}");
         }
     }
 }
