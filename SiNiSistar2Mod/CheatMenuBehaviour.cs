@@ -28,6 +28,7 @@ namespace SiNiSistar2Mod
 
         private void Update()
         {
+            // TODO: Fix
             if (Keyboard.current.leftAltKey.wasPressedThisFrame && Plugin.PlayerStatusManagerInstance != null)
             {
                 if (previousAttackLvl == -1)
@@ -110,7 +111,30 @@ namespace SiNiSistar2Mod
             if (Keyboard.current.f9Key.wasPressedThisFrame && Plugin.PlayerStatusManagerInstance != null)
             {
                 AbnormalType selectedType = ((AbnormalType[])Enum.GetValues(typeof(AbnormalType)))[selectedAbnormalIndex];
-                Plugin.PlayerStatusManagerInstance.AbnormalList.AddOrRemoveAbnormal(selectedType, !Plugin.PlayerStatusManagerInstance.AbnormalList.Has(selectedType));
+                if (Plugin.PlayerStatusManagerInstance.AbnormalList.Has(selectedType))
+                {
+                    Plugin.PlayerStatusManagerInstance.AbnormalList.RemoveAbnormal(selectedType);
+                }
+                else
+                {
+                    Plugin.PlayerStatusManagerInstance.AbnormalList.AddOrRemoveAbnormal(selectedType, true);
+                    // Check if the game managed to add it normally
+                    if (!Plugin.PlayerStatusManagerInstance.AbnormalList.Has(selectedType))
+                    {
+                        // Fuck the game, forcefully add it!
+                        AbnormalData data = Plugin.TryToLoadAbnormalData(selectedType);
+                        if (data != null)
+                        {
+                            Plugin.PlayerStatusManagerInstance.AbnormalList.AddAbnormal(data);
+                            Plugin.Instance.Log.LogInfo($"Forcefully Added {selectedType} to the Abnormal List");
+                            Plugin.Instance.Log.LogWarning("Forcefully adding a status will likely result in bugging out your game or it will outright not work.");
+                        }
+                        else
+                        {
+                            Plugin.Instance.Log.LogError($"Failed to add {selectedType} to the Abnormal List");
+                        }
+                    }
+                }
                 Plugin.Instance.Log.LogInfo($"Toggled {abnormalEnumValues.GetValue(selectedAbnormalIndex)}");
             }
 
@@ -152,9 +176,9 @@ namespace SiNiSistar2Mod
                 hasState = Plugin.PlayerStatusManagerInstance.AbnormalList.Has(selectedType);
             }
             GUI.Label(new Rect(10, 130, 500, 20), $"F9: ({(AbnormalType)abnormalEnumValues.GetValue(selectedAbnormalIndex)}) {(hasState ? "Enabled" : "Disabled")} - F10 Scroll Down - F11 Scroll Up");
-            GUI.Label(new Rect(10, 150, 500, 20), $"Note: Abnormal Statuses are location dependent if they can be added.");
+            GUI.Label(new Rect(10, 150, 500, 20), $"Note: Some Abnormal Statuses will not work.");
             GUI.Label(new Rect(10, 170, 500, 20), $"F12: Toggle Scene Select UI - {(SceneSelectUIOpen ? "Enabled" : "Disabled")}");
-            GUI.Label(new Rect(10, 190, 500, 20), $"LAlt: Toggle Level 100 Attack - {(previousAttackLvl != -1 ? "Enabled" : "Disabled")}");
+            GUI.Label(new Rect(10, 190, 500, 20), $"LAlt: Toggle Level 100 Attack - {(previousAttackLvl != -1 ? "Enabled" : "Disabled")} (Broken)");
             GUI.Label(new Rect(10, 210, 500, 20), $"W: Toggle Clothing State");
         }
     }
