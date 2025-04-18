@@ -14,7 +14,7 @@
 	<Nullable>disable</Nullable>
 	<WarningsAsErrors>false</WarningsAsErrors>
 	<GenerateDocumentationFile>false</GenerateDocumentationFile>
-	<OutputPath>D:\Tools\Games\SiNiSistar2_v1_0_1\WIN\BepInEx\plugins\</OutputPath> <!-- Change to your desired Build Path-->
+	<OutputPath>D:\Tools\Games\SiNiSistar2_v1_0_3\BepInEx\plugins\</OutputPath> <!-- Change to your desired Build Path-->
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>

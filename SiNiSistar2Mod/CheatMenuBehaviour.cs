@@ -17,6 +17,8 @@ namespace SiNiSistar2Mod
 
         private bool SceneSelectUIOpen = false;
 
+        private int previousAttackLvl = -1;
+
         private void Start()
         {
             itemEnumValues = Enum.GetValues(typeof(ItemID));
@@ -26,6 +28,22 @@ namespace SiNiSistar2Mod
 
         private void Update()
         {
+            if (Keyboard.current.leftAltKey.wasPressedThisFrame && Plugin.PlayerStatusManagerInstance != null)
+            {
+                if (previousAttackLvl == -1)
+                {
+                    previousAttackLvl = Plugin.PlayerStatusManagerInstance.AttackLv;
+                    Plugin.PlayerStatusManagerInstance.AttackLv = 100;
+                    Plugin.Instance.Log.LogInfo($"Attack Level set to 100");
+                }
+                else
+                {
+                    Plugin.PlayerStatusManagerInstance.AttackLv = previousAttackLvl;
+                    previousAttackLvl = -1;
+                    Plugin.Instance.Log.LogInfo($"Attack Level reset to {Plugin.PlayerStatusManagerInstance.AttackLv}");
+                }
+            }
+
             if (Keyboard.current.f1Key.wasPressedThisFrame)
             {
                 Plugin.MenuVisible = !Plugin.MenuVisible;
@@ -123,6 +141,7 @@ namespace SiNiSistar2Mod
             GUI.Label(new Rect(10, 130, 500, 20), $"F9: ({(AbnormalType)abnormalEnumValues.GetValue(selectedAbnormalIndex)}) {(hasState ? "Enabled" : "Disabled")} - F10 Scroll Down - F11 Scroll Up");
             GUI.Label(new Rect(10, 150, 500, 20), $"Note: Abnormal Statuses are location dependent if they can be added.");
             GUI.Label(new Rect(10, 170, 500, 20), $"F12: Toggle Scene Select UI - {(SceneSelectUIOpen ? "Enabled" : "Disabled")}");
+            GUI.Label(new Rect(10, 190, 500, 20), $"LAlt: Toggle Level 100 Attack - {(previousAttackLvl != -1 ? "Enabled" : "Disabled")}");
         }
     }
 }
