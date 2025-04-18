@@ -44,6 +44,19 @@ namespace SiNiSistar2Mod
                 }
             }
 
+            if (Keyboard.current.wKey.wasPressedThisFrame && Plugin.PlayerStatusManagerInstance != null)
+            {
+                if (Plugin.PlayerStatusManagerInstance.Durability.Current != 0)
+                {
+                    Plugin.PlayerStatusManagerInstance.Durability.SetCurrentValue(0);
+                    Plugin.Instance.Log.LogInfo($"Durability set to 0");
+                }
+                else
+                {
+                    Plugin.PlayerStatusManagerInstance.Durability.SetCurrentValue(Plugin.PlayerStatusManagerInstance.Durability.Max);
+                    Plugin.Instance.Log.LogInfo($"Durability set to Max");
+                }
+            }
             if (Keyboard.current.f1Key.wasPressedThisFrame)
             {
                 Plugin.MenuVisible = !Plugin.MenuVisible;
@@ -142,6 +155,7 @@ namespace SiNiSistar2Mod
             GUI.Label(new Rect(10, 150, 500, 20), $"Note: Abnormal Statuses are location dependent if they can be added.");
             GUI.Label(new Rect(10, 170, 500, 20), $"F12: Toggle Scene Select UI - {(SceneSelectUIOpen ? "Enabled" : "Disabled")}");
             GUI.Label(new Rect(10, 190, 500, 20), $"LAlt: Toggle Level 100 Attack - {(previousAttackLvl != -1 ? "Enabled" : "Disabled")}");
+            GUI.Label(new Rect(10, 210, 500, 20), $"W: Toggle Clothing State");
         }
     }
 }
