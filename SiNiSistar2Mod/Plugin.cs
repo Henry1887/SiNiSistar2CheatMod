@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace SiNiSistar2Mod
 {
-    [BepInPlugin("com.Henry1887.SiNiSistar2Mod", "SiNiSistar 2 Cheat Mod", "1.0.0")]
+    [BepInPlugin("com.Henry1887.SiNiSistar2Mod", "SiNiSistar 2 Cheat Mod", "1.0.5")]
     public class Plugin : BasePlugin
     {
         internal static Plugin Instance { get; private set; }
@@ -21,6 +21,9 @@ namespace SiNiSistar2Mod
         internal static bool MaxMpEnabled = false;
         internal static bool MenuVisible = true;
         internal static bool LockHP1Enabled = false;
+        internal static bool BlockBind = false;
+        internal static bool BlockAllDamage = false;
+        internal static bool AttackCheat = false;
 
         internal static Dictionary<string, string> AbnormalDataToAssetBundleDict = new Dictionary<string, string>()
         {
@@ -104,6 +107,8 @@ namespace SiNiSistar2Mod
             ClassInjector.RegisterTypeInIl2Cpp<CheatMenuBehaviour>();
 
             SceneManager.add_sceneLoaded((UnityEngine.Events.UnityAction<Scene, LoadSceneMode>)OnSceneLoaded);
+
+            CheatMenuEntryHandler.LoadEntries();
 
             Log.LogInfo("Mod loaded successfully!");
         }
