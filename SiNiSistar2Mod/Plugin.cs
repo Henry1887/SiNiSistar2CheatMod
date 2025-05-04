@@ -24,6 +24,7 @@ namespace SiNiSistar2Mod
         internal static bool BlockBind = false;
         internal static bool BlockAllDamage = false;
         internal static bool AttackCheat = false;
+        internal static bool ShowEnemyHP = false;
 
         internal static Dictionary<string, string> AbnormalDataToAssetBundleDict = new Dictionary<string, string>()
         {

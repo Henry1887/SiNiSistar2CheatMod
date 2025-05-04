@@ -27,6 +27,8 @@
             CheatMenuEntries.Add(new AttackEntry());
             CheatMenuEntries.Add(new ReleaseBindEntry());
             CheatMenuEntries.Add(new BlockAllDamageEntry());
+            CheatMenuEntries.Add(new ShowEnemyHealthEntry());
+            CheatMenuEntries.Add(new KillAllEnemiesEntry());
         }
 
         public static List<string> GetDrawBuffer()

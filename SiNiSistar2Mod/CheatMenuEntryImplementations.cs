@@ -276,4 +276,40 @@ namespace SiNiSistar2Mod
             }
         }
     }
+
+    public class ShowEnemyHealthEntry : ICheatMenuEntry
+    {
+        public string GetDrawText()
+        {
+            return $"6: Show Enemy Health - {(Plugin.ShowEnemyHP ? "Enabled" : "Disabled")}";
+        }
+        public void KeybindBehaviour()
+        {
+            if (Keyboard.current.digit6Key.wasPressedThisFrame)
+            {
+                Plugin.ShowEnemyHP = !Plugin.ShowEnemyHP;
+                Plugin.Instance.Log.LogInfo($"Toggled ShowEnemyHP");
+            }
+        }
+    }
+
+    public class KillAllEnemiesEntry : ICheatMenuEntry
+    {
+        public string GetDrawText()
+        {
+            return $"7: Kill All Enemies in current Level";
+        }
+        public void KeybindBehaviour()
+        {
+            if (Keyboard.current.digit7Key.wasPressedThisFrame)
+            {
+                foreach (EnemyObject enemy in CheatMenuBehaviour.EnemyObjectList)
+                {
+                    if (enemy == null || enemy.DeadState != EnemyDead.State.Alive || enemy.HP == null) continue;
+                    enemy.HP.SetCurrentValue(0);
+                }
+                Plugin.Instance.Log.LogInfo($"Killed All enemies in current level.");
+            }
+        }
+    }
 }

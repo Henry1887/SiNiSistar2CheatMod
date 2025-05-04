@@ -14,7 +14,7 @@
 	<Nullable>disable</Nullable>
 	<WarningsAsErrors>false</WarningsAsErrors>
 	<GenerateDocumentationFile>false</GenerateDocumentationFile>
-	<OutputPath>D:\Tools\Games\SiNiSistar2_v1_0_3\BepInEx\plugins\</OutputPath> <!-- Change to your desired Build Path-->
+	<OutputPath>D:\Tools\Games\SiNiSistar2_v1_0_6\BepInEx\plugins\</OutputPath> <!-- Change to your desired Build Path-->
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -61,6 +61,10 @@
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>Libs\UnityEngine.IMGUIModule.dll</HintPath>
+		<Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>Libs\UnityEngine.TextRenderingModule.dll</HintPath>
 		<Private>false</Private>
     </Reference>
   </ItemGroup>
