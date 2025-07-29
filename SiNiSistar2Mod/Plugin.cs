@@ -17,15 +17,6 @@ namespace SiNiSistar2Mod
 
         private Harmony _harmony;
 
-        internal static bool MaxHpEnabled = false;
-        internal static bool MaxMpEnabled = false;
-        internal static bool MenuVisible = true;
-        internal static bool LockHP1Enabled = false;
-        internal static bool BlockBind = false;
-        internal static bool BlockAllDamage = false;
-        internal static bool AttackCheat = false;
-        internal static bool ShowEnemyHP = false;
-
         internal static Dictionary<string, string> AbnormalDataToAssetBundleDict = new Dictionary<string, string>()
         {
             { "Assimilation", "4f4dc7b245bd26399d19121733377" },

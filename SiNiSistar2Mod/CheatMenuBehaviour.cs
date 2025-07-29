@@ -41,11 +41,11 @@ namespace SiNiSistar2Mod
 
         private void OnGUI()
         {
-            if (Plugin.ShowEnemyHP)
+            if (CheatMenuEntryHandler.GetValue("ShowEnemyHP"))
             {
                 DrawEnemyHealth();
             }
-            if (!Plugin.MenuVisible)
+            if (!CheatMenuEntryHandler.GetValue("IsVisible", true))
                 return;
             DrawEntries = CheatMenuEntryHandler.GetDrawBuffer();
             windowRect.height = boxInnerPadding * 2 + (DrawEntries.Count * lineHeight) + 20; // +20 because of the titlebar

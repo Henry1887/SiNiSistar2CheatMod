@@ -3,12 +3,34 @@
     internal interface ICheatMenuEntry
     {
         string GetDrawText(); // Gets called by OnGUI if the menu is visible
-        void KeybindBehaviour(); // Gets called constantly for keybind behaviour
+        void KeybindBehaviour(); // Gets called if IsKeybindTriggered() returns true
+        bool IsKeybindTriggered { get; } // Checks if the keybind is triggered
     }
 
     public static class CheatMenuEntryHandler
     {
         private static readonly List<ICheatMenuEntry> CheatMenuEntries = new();
+        private static Dictionary<string, bool> EntryValues = new();
+
+        public static bool GetValue(string key, bool defaultValue = false)
+        {
+            if (EntryValues.TryGetValue(key, out bool value))
+            {
+                return value;
+            }
+            return defaultValue;
+        }
+        public static void SetValue(string key, bool value)
+        {
+            if (EntryValues.ContainsKey(key))
+            {
+                EntryValues[key] = value;
+            }
+            else
+            {
+                EntryValues.Add(key, value);
+            }
+        }
 
         public static void LoadEntries()
         {
@@ -21,7 +43,6 @@
             CheatMenuEntries.Add(new LockHP1Entry());
             CheatMenuEntries.Add(new AddItemEntry());
             CheatMenuEntries.Add(new AbnormalEntry());
-            CheatMenuEntries.Add(new SceneSelectEntry());
             CheatMenuEntries.Add(new BlockBindEntry());
             CheatMenuEntries.Add(new ToggleClothingEntry());
             CheatMenuEntries.Add(new AttackEntry());
@@ -45,6 +66,8 @@
         {
             foreach (ICheatMenuEntry entry in CheatMenuEntries)
             {
+                if (!entry.IsKeybindTriggered)
+                    continue;
                 entry.KeybindBehaviour();
             }
         }

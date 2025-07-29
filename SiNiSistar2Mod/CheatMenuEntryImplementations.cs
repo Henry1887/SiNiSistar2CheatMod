@@ -12,43 +12,35 @@ namespace SiNiSistar2Mod
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.f1Key.wasPressedThisFrame)
-            {
-                Plugin.MenuVisible = !Plugin.MenuVisible;
-                Plugin.Instance.Log.LogInfo($"Menu Visibility: {Plugin.MenuVisible}");
-            }
+            CheatMenuEntryHandler.SetValue("IsVisible", !CheatMenuEntryHandler.GetValue("IsVisible", true));
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.f1Key.wasPressedThisFrame; } }
     }
     public class MaxHPEntry : ICheatMenuEntry
     {
         public string GetDrawText()
         {
-            return $"F2: Max HP - {(Plugin.MaxHpEnabled ? "Enabled" : "Disabled")}";
+            return $"F2: Max HP - {(CheatMenuEntryHandler.GetValue("MaxHP") ? "Enabled" : "Disabled")}";
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.f2Key.wasPressedThisFrame)
-            {
-                Plugin.MaxHpEnabled = !Plugin.MaxHpEnabled;
-                if (Plugin.LockHP1Enabled) Plugin.LockHP1Enabled = false;
-                Plugin.Instance.Log.LogInfo($"Max HP Cheat: {Plugin.MaxHpEnabled}");
-            }
+            CheatMenuEntryHandler.SetValue("MaxHP", !CheatMenuEntryHandler.GetValue("MaxHP"));
+
+            if (CheatMenuEntryHandler.GetValue("LockHP1")) CheatMenuEntryHandler.SetValue("LockHP1", false);
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.f2Key.wasPressedThisFrame; } }
     }
     public class MaxMPEntry : ICheatMenuEntry
     {
         public string GetDrawText()
         {
-            return $"F3: Max MP - {(Plugin.MaxMpEnabled ? "Enabled" : "Disabled")}";
+            return $"F3: Max MP - {(CheatMenuEntryHandler.GetValue("MaxMP") ? "Enabled" : "Disabled")}";
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.f3Key.wasPressedThisFrame)
-            {
-                Plugin.MaxMpEnabled = !Plugin.MaxMpEnabled;
-                Plugin.Instance.Log.LogInfo($"Max MP Cheat: {Plugin.MaxMpEnabled}");
-            }
+            CheatMenuEntryHandler.SetValue("MaxMP", !CheatMenuEntryHandler.GetValue("MaxMP"));
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.f3Key.wasPressedThisFrame; } }
     }
     public class AddRelicsEntry : ICheatMenuEntry
     {
@@ -58,29 +50,26 @@ namespace SiNiSistar2Mod
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.f4Key.wasPressedThisFrame && Plugin.PlayerStatusManagerInstance != null)
+            if (Plugin.PlayerStatusManagerInstance != null)
             {
                 Plugin.PlayerStatusManagerInstance.AddRelics(1000, false);
-                Plugin.Instance.Log.LogInfo($"Added 1000 Relics.");
             }
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.f4Key.wasPressedThisFrame; } }
     }
 
     public class LockHP1Entry : ICheatMenuEntry
     {
         public string GetDrawText()
         {
-            return $"F5: Lock HP to 1 - {(Plugin.LockHP1Enabled ? "Enabled" : "Disabled")} (May still cause a Game Over)";
+            return $"F5: Lock HP to 1 - {(CheatMenuEntryHandler.GetValue("LockHP1") ? "Enabled" : "Disabled")} (May still cause a Game Over)";
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.f5Key.wasPressedThisFrame)
-            {
-                Plugin.LockHP1Enabled = !Plugin.LockHP1Enabled;
-                if (Plugin.MaxHpEnabled) Plugin.MaxHpEnabled = false;
-                Plugin.Instance.Log.LogInfo($"Lock HP to 1 Cheat: {Plugin.LockHP1Enabled}");
-            }
+            CheatMenuEntryHandler.SetValue("LockHP1", !CheatMenuEntryHandler.GetValue("LockHP1"));
+            if (CheatMenuEntryHandler.GetValue("MaxHP")) CheatMenuEntryHandler.SetValue("MaxHP", false);
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.f5Key.wasPressedThisFrame; } }
     }
 
     public class AddItemEntry : ICheatMenuEntry
@@ -109,6 +98,16 @@ namespace SiNiSistar2Mod
             {
                 selectedItemIndex++;
                 if (selectedItemIndex > itemEnumValues.Length - 2) selectedItemIndex = 0;
+            }
+        }
+        public bool IsKeybindTriggered
+        {
+            get
+            {
+                return
+                    Keyboard.current.f6Key.wasPressedThisFrame ||
+                    Keyboard.current.f7Key.wasPressedThisFrame ||
+                    Keyboard.current.f8Key.wasPressedThisFrame;
             }
         }
     }
@@ -169,22 +168,14 @@ namespace SiNiSistar2Mod
                 if (selectedAbnormalIndex > abnormalEnumValues.Length - 1) selectedAbnormalIndex = 1;
             }
         }
-    }
-
-    public class SceneSelectEntry : ICheatMenuEntry
-    {
-        private bool SceneSelectUIOpen = false;
-        public string GetDrawText()
+        public bool IsKeybindTriggered
         {
-            return $"F12: Scene Select UI - {(SceneSelectUIOpen ? "Enabled" : "Disabled")}";
-        }
-        public void KeybindBehaviour()
-        {
-            if (Keyboard.current.f12Key.wasPressedThisFrame)
+            get
             {
-                SceneSelectUIOpen = !SceneSelectUIOpen;
-                ManagerList.Debugger.DebugSceneSelectUI.gameObject.SetActive(SceneSelectUIOpen);
-                ManagerList.Debugger.DebugSceneSelectUI.enabled = SceneSelectUIOpen;
+                return
+                    Keyboard.current.f9Key.wasPressedThisFrame ||
+                    Keyboard.current.f10Key.wasPressedThisFrame ||
+                    Keyboard.current.f11Key.wasPressedThisFrame;
             }
         }
     }
@@ -193,16 +184,13 @@ namespace SiNiSistar2Mod
     {
         public string GetDrawText()
         {
-            return $"1: Block Bind - {(Plugin.BlockBind ? "Enabled" : "Disabled")}";
+            return $"1: Block Bind - {(CheatMenuEntryHandler.GetValue("BlockBind") ? "Enabled" : "Disabled")}";
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.digit1Key.wasPressedThisFrame)
-            {
-                Plugin.BlockBind = !Plugin.BlockBind;
-                Plugin.Instance.Log.LogInfo($"Block Bind: {Plugin.BlockBind}");
-            }
+            CheatMenuEntryHandler.SetValue("BlockBind", !CheatMenuEntryHandler.GetValue("BlockBind"));
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.digit1Key.wasPressedThisFrame; } }
     }
 
     public class ToggleClothingEntry : ICheatMenuEntry
@@ -213,36 +201,29 @@ namespace SiNiSistar2Mod
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.digit2Key.wasPressedThisFrame && Plugin.PlayerStatusManagerInstance != null)
+            if (Plugin.PlayerStatusManagerInstance.Durability.Current != 0)
             {
-                if (Plugin.PlayerStatusManagerInstance.Durability.Current != 0)
-                {
-                    Plugin.PlayerStatusManagerInstance.Durability.SetCurrentValue(0);
-                    Plugin.Instance.Log.LogInfo($"Durability set to 0");
-                }
-                else
-                {
-                    Plugin.PlayerStatusManagerInstance.Durability.SetCurrentValue(Plugin.PlayerStatusManagerInstance.Durability.Max);
-                    Plugin.Instance.Log.LogInfo($"Durability set to Max");
-                }
+                Plugin.PlayerStatusManagerInstance.Durability.SetCurrentValue(0);
+            }
+            else
+            {
+                Plugin.PlayerStatusManagerInstance.Durability.SetCurrentValue(Plugin.PlayerStatusManagerInstance.Durability.Max);
             }
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.digit2Key.wasPressedThisFrame; } }
     }
 
     public class AttackEntry : ICheatMenuEntry
     {
         public string GetDrawText()
         {
-            return $"3: Instant Kill - {(Plugin.AttackCheat ? "Enabled" : "Disabled")}";
+            return $"3: Instant Kill - {(CheatMenuEntryHandler.GetValue("AttackCheat") ? "Enabled" : "Disabled")}";
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.digit3Key.wasPressedThisFrame)
-            {
-                Plugin.AttackCheat = !Plugin.AttackCheat;
-                Plugin.Instance.Log.LogInfo($"Instant Kill Toggled");
-            }
+            CheatMenuEntryHandler.SetValue("AttackCheat", !CheatMenuEntryHandler.GetValue("AttackCheat"));
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.digit3Key.wasPressedThisFrame; } }
     }
 
     public class ReleaseBindEntry : ICheatMenuEntry
@@ -253,44 +234,35 @@ namespace SiNiSistar2Mod
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.digit4Key.wasPressedThisFrame)
-            {
-                ManagerList.Object.Lelia.Bind.ReleaseBind();
-                Plugin.Instance.Log.LogInfo($"Released Current Bind");
-            }
+            ManagerList.Object.Lelia.Bind.ReleaseBind();
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.digit4Key.wasPressedThisFrame; } }
     }
 
     public class BlockAllDamageEntry : ICheatMenuEntry
     {
         public string GetDrawText()
         {
-            return $"5: Block All Damage - {(Plugin.BlockAllDamage ? "Enabled" : "Disabled")}";
+            return $"5: Block All Damage - {(CheatMenuEntryHandler.GetValue("BlockAllDamage") ? "Enabled" : "Disabled")}";
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.digit5Key.wasPressedThisFrame)
-            {
-                Plugin.BlockAllDamage = !Plugin.BlockAllDamage;
-                Plugin.Instance.Log.LogInfo($"Toggled Block All Damage");
-            }
+            CheatMenuEntryHandler.SetValue("BlockAllDamage", !CheatMenuEntryHandler.GetValue("BlockAllDamage"));
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.digit5Key.wasPressedThisFrame; } }
     }
 
     public class ShowEnemyHealthEntry : ICheatMenuEntry
     {
         public string GetDrawText()
         {
-            return $"6: Show Enemy Health - {(Plugin.ShowEnemyHP ? "Enabled" : "Disabled")}";
+            return $"6: Show Enemy Health - {(CheatMenuEntryHandler.GetValue("ShowEnemyHP") ? "Enabled" : "Disabled")}";
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.digit6Key.wasPressedThisFrame)
-            {
-                Plugin.ShowEnemyHP = !Plugin.ShowEnemyHP;
-                Plugin.Instance.Log.LogInfo($"Toggled ShowEnemyHP");
-            }
+            CheatMenuEntryHandler.SetValue("ShowEnemyHP", !CheatMenuEntryHandler.GetValue("ShowEnemyHP"));
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.digit6Key.wasPressedThisFrame; } }
     }
 
     public class KillAllEnemiesEntry : ICheatMenuEntry
@@ -301,15 +273,12 @@ namespace SiNiSistar2Mod
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.digit7Key.wasPressedThisFrame)
+            foreach (EnemyObject enemy in CheatMenuBehaviour.EnemyObjectList)
             {
-                foreach (EnemyObject enemy in CheatMenuBehaviour.EnemyObjectList)
-                {
-                    if (enemy == null || enemy.DeadState != EnemyDead.State.Alive || enemy.HP == null) continue;
-                    enemy.HP.SetCurrentValue(0);
-                }
-                Plugin.Instance.Log.LogInfo($"Killed All enemies in current level.");
+                if (enemy == null || enemy.DeadState != EnemyDead.State.Alive || enemy.HP == null) continue;
+                enemy.HP.SetCurrentValue(0);
             }
         }
+        public bool IsKeybindTriggered { get { return Keyboard.current.digit7Key.wasPressedThisFrame; } }
     }
 }

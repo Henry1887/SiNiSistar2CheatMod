@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using SiNiSistar2.Damage;
 using SiNiSistar2.Obj;
-using UnityEngine;
+using System.Reflection;
 
 namespace SiNiSistar2Mod
 {
@@ -17,16 +17,16 @@ namespace SiNiSistar2Mod
                 Plugin.PlayerStatusManagerInstance = __instance;
             }
 
-            if (Plugin.MaxHpEnabled)
+            if (CheatMenuEntryHandler.GetValue("MaxHP"))
             {
                 __instance.HP.SetCurrentValue(__instance.HP.Max);
             }
-            else if (Plugin.LockHP1Enabled)
+            else if (CheatMenuEntryHandler.GetValue("LockHP1"))
             {
                 __instance.HP.SetCurrentValue(1);
             }
 
-            if (Plugin.MaxMpEnabled)
+            if (CheatMenuEntryHandler.GetValue("MaxMP"))
             {
                 __instance.MP.SetCurrentValue(__instance.MP.Max);
             }
@@ -41,50 +41,33 @@ namespace SiNiSistar2Mod
         [HarmonyPatch("StartBind")]
         public static bool StartBindPrefix()
         {
-            return !Plugin.BlockBind;
+            return !CheatMenuEntryHandler.GetValue("BlockBind");
         }
     }
 
-    [HarmonyPatch(typeof(DamageManager), "AddDamage", new[] {
-        typeof(IDamageSenderOwner),
-        typeof(IDamageReceiverOwner),
-        typeof(int),
-        typeof(int),
-        typeof(DamageSenderCollider),
-        typeof(DamageReceiverCollider),
-        typeof(DamageParameter),
-        typeof(int),
-        typeof(float),
-        typeof(Vector3),
-        typeof(DamageTargetType),
-        typeof(DamageSourceType)
-    })]
+    [HarmonyPatch]
     public static class DamageManager_AddDamage_Patch
     {
+        static MethodBase TargetMethod()
+        {
+            return typeof(DamageManager)
+                .GetMethods()
+                .First(m => m.Name == "AddDamage" && m.GetParameters().Length == 12);
+        }
         public static bool Prefix(
-            IDamageSenderOwner inSenderObject,
             IDamageReceiverOwner inReceiverObject,
-            int inSenderID,
-            int inReceiverID,
-            DamageSenderCollider inSenderCollider,
-            DamageReceiverCollider inReceiverCollider,
-            ref DamageParameter inDamageParameter,
-            int inHitCountMax,
-            float inHitInterval,
-            Vector3 inHitPosition,
-            DamageTargetType inDamageTargetType,
-            DamageSourceType damageSourceType)
+            DamageTargetType inDamageTargetType)
         {
             if (DamageTargetType.Player == inDamageTargetType)
             {
-                if (Plugin.BlockAllDamage)
+                if (CheatMenuEntryHandler.GetValue("BlockAllDamage"))
                 {
                     return false;
                 }
             }
             else
             {
-                if (Plugin.AttackCheat)
+                if (CheatMenuEntryHandler.GetValue("AttackCheat"))
                 {
                     inReceiverObject.HP.SetCurrentValue(0);
                 }

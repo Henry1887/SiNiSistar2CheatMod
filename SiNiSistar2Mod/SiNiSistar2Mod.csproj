@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
 	<Optimize>true</Optimize>
 	<DebugType>none</DebugType>
 	<DebugSymbols>false</DebugSymbols>
@@ -14,9 +14,8 @@
 	<Nullable>disable</Nullable>
 	<WarningsAsErrors>false</WarningsAsErrors>
 	<GenerateDocumentationFile>false</GenerateDocumentationFile>
-	<OutputPath>D:\Tools\Games\SiNiSistar2_v1_0_6\BepInEx\plugins\</OutputPath> <!-- Change to your desired Build Path-->
+	<OutputPath>G:\Games\SiNiSistar2_v1_1_0\BepInEx\plugins\</OutputPath> <!-- Change to your desired Build Path-->
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -54,6 +53,7 @@
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>Libs\UnityEngine.AssetBundleModule.dll</HintPath>
+		<Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>Libs\UnityEngine.CoreModule.dll</HintPath>
