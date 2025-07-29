@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace SiNiSistar2Mod
 {
-    [BepInPlugin("com.Henry1887.SiNiSistar2Mod", "SiNiSistar 2 Cheat Mod", "1.0.5")]
+    [BepInPlugin("com.Henry1887.SiNiSistar2Mod", "SiNiSistar 2 Cheat Mod", "1.0.7")]
     public class Plugin : BasePlugin
     {
         internal static Plugin Instance { get; private set; }
