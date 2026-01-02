@@ -1,7 +1,8 @@
 ﻿using HarmonyLib;
 using SiNiSistar2.Obj;
+using SiNiSistar2Mod.CheatMenu;
 
-namespace SiNiSistar2Mod
+namespace SiNiSistar2Mod.Patches
 {
     [HarmonyPatch(typeof(EnemyObject))]
     public static class EnemyObjectPatch

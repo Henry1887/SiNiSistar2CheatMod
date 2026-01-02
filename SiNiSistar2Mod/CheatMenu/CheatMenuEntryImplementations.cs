@@ -2,7 +2,7 @@
 using SiNiSistar2.Obj;
 using UnityEngine.InputSystem;
 
-namespace SiNiSistar2Mod
+namespace SiNiSistar2Mod.CheatMenu
 {
     public class HideEntry : ICheatMenuEntry
     {
@@ -50,10 +50,7 @@ namespace SiNiSistar2Mod
         }
         public void KeybindBehaviour()
         {
-            if (Plugin.PlayerStatusManagerInstance != null)
-            {
-                Plugin.PlayerStatusManagerInstance.AddRelics(1000, false);
-            }
+            ManagerList.PlayerStatus.AddRelics(1000, false);
         }
         public bool IsKeybindTriggered { get { return Keyboard.current.f4Key.wasPressedThisFrame; } }
     }
@@ -82,10 +79,10 @@ namespace SiNiSistar2Mod
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.f6Key.wasPressedThisFrame && Plugin.PlayerStatusManagerInstance != null)
+            if (Keyboard.current.f6Key.wasPressedThisFrame)
             {
                 ItemID itemId = (ItemID)itemEnumValues.GetValue(selectedItemIndex);
-                Plugin.PlayerStatusManagerInstance.InventoryHandler.AddItem(itemId, 1);
+                ManagerList.PlayerStatus.InventoryHandler.AddItem(itemId, 1);
                 Plugin.Instance.Log.LogInfo($"Added 1 {itemId}");
             }
             if (Keyboard.current.f7Key.wasPressedThisFrame)
@@ -118,44 +115,49 @@ namespace SiNiSistar2Mod
         private readonly Array abnormalEnumValues = Enum.GetValues(typeof(AbnormalType));
         public string GetDrawText()
         {
-            bool hasState = false;
-            if (Plugin.PlayerStatusManagerInstance != null)
+            AbnormalType selectedType = (AbnormalType)abnormalEnumValues.GetValue(selectedAbnormalIndex);
+            bool hasState;
+            // May throw
+            try
             {
-                AbnormalType selectedType = ((AbnormalType[])Enum.GetValues(typeof(AbnormalType)))[selectedAbnormalIndex];
-                hasState = Plugin.PlayerStatusManagerInstance.AbnormalList.Has(selectedType);
+                hasState = ManagerList.PlayerStatus != null ? ManagerList.PlayerStatus.AbnormalList.Has(selectedType) : false;
             }
-            return $"F9: ({(AbnormalType)abnormalEnumValues.GetValue(selectedAbnormalIndex)}) {(hasState ? "Enabled" : "Disabled")} - F10 Scroll Down - F11 Scroll Up (May break your game)";
+            catch
+            {
+                hasState = false;
+            }
+            return $"F9: ({selectedType}) {(hasState ? "Enabled" : "Disabled")} - F10 Scroll Down - F11 Scroll Up (May break your game)";
         }
         public void KeybindBehaviour()
         {
-            if (Keyboard.current.f9Key.wasPressedThisFrame && Plugin.PlayerStatusManagerInstance != null)
+            if (Keyboard.current.f9Key.wasPressedThisFrame)
             {
-                AbnormalType selectedType = ((AbnormalType[])Enum.GetValues(typeof(AbnormalType)))[selectedAbnormalIndex];
-                if (Plugin.PlayerStatusManagerInstance.AbnormalList.Has(selectedType))
+                AbnormalType selectedType = (AbnormalType)abnormalEnumValues.GetValue(selectedAbnormalIndex);
+                if (ManagerList.PlayerStatus.AbnormalList.Has(selectedType))
                 {
-                    Plugin.PlayerStatusManagerInstance.AbnormalList.RemoveAbnormal(selectedType);
+                    ManagerList.PlayerStatus.AbnormalList.RemoveAbnormal(selectedType);
                 }
                 else
                 {
-                    Plugin.PlayerStatusManagerInstance.AbnormalList.AddOrRemoveAbnormal(selectedType, true);
+                    ManagerList.PlayerStatus.AbnormalList.AddOrRemoveAbnormal(selectedType, true);
                     // Check if the game managed to add it normally
-                    if (!Plugin.PlayerStatusManagerInstance.AbnormalList.Has(selectedType))
+                    if (!ManagerList.PlayerStatus.AbnormalList.Has(selectedType))
                     {
                         // Fuck the game, forcefully add it!
-                        AbnormalData data = Plugin.TryToLoadAbnormalData(selectedType);
-                        if (data != null)
-                        {
-                            Plugin.PlayerStatusManagerInstance.AbnormalList.AddAbnormal(data);
-                            Plugin.Instance.Log.LogInfo($"Forcefully Added {selectedType} to the Abnormal List");
-                            Plugin.Instance.Log.LogWarning("Forcefully adding a status will likely result in bugging out your game or it will outright not work.");
-                        }
-                        else
+                        AbnormalData data;
+                        if (!AbnormalDataHandler.TryLoadAbnormalData(selectedType, out data))
                         {
                             Plugin.Instance.Log.LogError($"Failed to add {selectedType} to the Abnormal List");
                         }
+                        else
+                        {
+                            ManagerList.PlayerStatus.AbnormalList.AddAbnormal(data);
+                            Plugin.Instance.Log.LogInfo($"Forcefully Added {selectedType} to the Abnormal List");
+                            Plugin.Instance.Log.LogWarning("Forcefully adding a status will likely result in bugging out your game or it will outright not work.");
+                        }
                     }
                 }
-                Plugin.Instance.Log.LogInfo($"Toggled {abnormalEnumValues.GetValue(selectedAbnormalIndex)}");
+                Plugin.Instance.Log.LogInfo($"Toggled {selectedType}");
             }
             if (Keyboard.current.f10Key.wasPressedThisFrame)
             {
@@ -201,13 +203,13 @@ namespace SiNiSistar2Mod
         }
         public void KeybindBehaviour()
         {
-            if (Plugin.PlayerStatusManagerInstance.Durability.Current != 0)
+            if (ManagerList.PlayerStatus.Durability.Current != 0)
             {
-                Plugin.PlayerStatusManagerInstance.Durability.SetCurrentValue(0);
+                ManagerList.PlayerStatus.Durability.SetCurrentValue(0);
             }
             else
             {
-                Plugin.PlayerStatusManagerInstance.Durability.SetCurrentValue(Plugin.PlayerStatusManagerInstance.Durability.Max);
+                ManagerList.PlayerStatus.Durability.SetCurrentValue(ManagerList.PlayerStatus.Durability.Max);
             }
         }
         public bool IsKeybindTriggered { get { return Keyboard.current.digit2Key.wasPressedThisFrame; } }

@@ -1,7 +1,7 @@
 ﻿using SiNiSistar2.Obj;
 using UnityEngine;
 
-namespace SiNiSistar2Mod
+namespace SiNiSistar2Mod.CheatMenu
 {
     public class CheatMenuBehaviour : MonoBehaviour
     {
@@ -22,8 +22,6 @@ namespace SiNiSistar2Mod
         {
             lineWidth = boxWidth - (boxInnerPadding * 2);
             windowRect.width = boxWidth;
-
-            Plugin.Instance.Log.LogInfo("CheatMenuBehaviour started!");
         }
 
         private void Update()
@@ -48,7 +46,7 @@ namespace SiNiSistar2Mod
             if (!CheatMenuEntryHandler.GetValue("IsVisible", true))
                 return;
             DrawEntries = CheatMenuEntryHandler.GetDrawBuffer();
-            windowRect.height = boxInnerPadding * 2 + (DrawEntries.Count * lineHeight) + 20; // +20 because of the titlebar
+            windowRect.height = boxInnerPadding * 2 + (DrawEntries.Count * lineHeight) + 20;
             windowRect = GUI.Window(0, windowRect, (GUI.WindowFunction)DrawCheatWindow, "Cheat Menu");
         }
 
@@ -83,7 +81,7 @@ namespace SiNiSistar2Mod
         {
             for (int i = 0; i < DrawEntries.Count; i++)
             {
-                GUI.Label(new Rect(boxInnerPadding, boxInnerPadding + (i * lineHeight) + 20, lineWidth, lineHeight), DrawEntries[i]); // +20 because of the titlebar
+                GUI.Label(new Rect(boxInnerPadding, boxInnerPadding + (i * lineHeight) + 20, lineWidth, lineHeight), DrawEntries[i]);
             }
 
             GUI.DragWindow(new Rect(0, 0, windowRect.width, 20));

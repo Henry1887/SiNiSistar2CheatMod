@@ -1,12 +1,5 @@
-﻿namespace SiNiSistar2Mod
+﻿namespace SiNiSistar2Mod.CheatMenu
 {
-    internal interface ICheatMenuEntry
-    {
-        string GetDrawText(); // Gets called by OnGUI if the menu is visible
-        void KeybindBehaviour(); // Gets called if IsKeybindTriggered() returns true
-        bool IsKeybindTriggered { get; } // Checks if the keybind is triggered
-    }
-
     public static class CheatMenuEntryHandler
     {
         private static readonly List<ICheatMenuEntry> CheatMenuEntries = new();
