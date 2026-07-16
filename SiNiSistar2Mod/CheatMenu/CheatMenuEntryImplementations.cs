@@ -1,71 +1,169 @@
-﻿using SiNiSistar2.Manager;
+using SiNiSistar2.Manager;
 using SiNiSistar2.Obj;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace SiNiSistar2Mod.CheatMenu
 {
-    public class HideEntry : ICheatMenuEntry
+    internal static class Categories
     {
-        public string GetDrawText() => "F1: Hide Menu";
-
-        public void KeybindBehaviour()
-            => CheatMenuEntryHandler.SetValue(CheatKeys.IsVisible, !CheatMenuEntryHandler.GetValue(CheatKeys.IsVisible, true));
-
-        public bool IsKeybindTriggered => Keyboard.current.f1Key.wasPressedThisFrame;
+        public const string Player = "Player";
+        public const string Combat = "Combat";
+        public const string Items  = "Items";
+        public const string Status = "Abnormal Status";
     }
 
-    public class MaxHPEntry : ICheatMenuEntry
-    {
-        public string GetDrawText()
-            => CheatMenuEntryHandler.FormatToggle("F2: Max HP", CheatMenuEntryHandler.GetValue(CheatKeys.MaxHP));
+    // ----- Player -----------------------------------------------------------
 
-        public void KeybindBehaviour()
+    public class MaxHPEntry : ToggleEntry
+    {
+        protected override string Label => "Max HP";
+        protected override string CheatKey => CheatKeys.MaxHP;
+        protected override string Hotkey => "F2";
+        public override string Category => Categories.Player;
+
+        protected override void OnChanged(bool nowOn)
         {
-            CheatMenuEntryHandler.ToggleValue(CheatKeys.MaxHP);
             // Max HP and Lock HP=1 are mutually exclusive.
-            if (CheatMenuEntryHandler.GetValue(CheatKeys.LockHP1))
+            if (nowOn && CheatMenuEntryHandler.GetValue(CheatKeys.LockHP1))
                 CheatMenuEntryHandler.SetValue(CheatKeys.LockHP1, false);
         }
 
-        public bool IsKeybindTriggered => Keyboard.current.f2Key.wasPressedThisFrame;
+        public override bool IsKeybindTriggered => Keyboard.current.f2Key.wasPressedThisFrame;
     }
 
-    public class MaxMPEntry : ICheatMenuEntry
+    public class MaxMPEntry : ToggleEntry
     {
-        public string GetDrawText()
-            => CheatMenuEntryHandler.FormatToggle("F3: Max MP", CheatMenuEntryHandler.GetValue(CheatKeys.MaxMP));
-
-        public void KeybindBehaviour() => CheatMenuEntryHandler.ToggleValue(CheatKeys.MaxMP);
-
-        public bool IsKeybindTriggered => Keyboard.current.f3Key.wasPressedThisFrame;
+        protected override string Label => "Max MP";
+        protected override string CheatKey => CheatKeys.MaxMP;
+        protected override string Hotkey => "F3";
+        public override string Category => Categories.Player;
+        public override bool IsKeybindTriggered => Keyboard.current.f3Key.wasPressedThisFrame;
     }
 
-    public class AddRelicsEntry : ICheatMenuEntry
+    public class LockHP1Entry : ToggleEntry
     {
-        public string GetDrawText() => "F4: Add 1000 Relics";
+        protected override string Label => "Lock HP to 1";
+        protected override string CheatKey => CheatKeys.LockHP1;
+        protected override string Hotkey => "F5";
+        protected override string SubLabel => "May still cause a Game Over";
+        public override string Category => Categories.Player;
 
-        public void KeybindBehaviour() => ManagerList.PlayerStatus.AddRelics(1000, false);
-
-        public bool IsKeybindTriggered => Keyboard.current.f4Key.wasPressedThisFrame;
-    }
-
-    public class LockHP1Entry : ICheatMenuEntry
-    {
-        public string GetDrawText()
-            => CheatMenuEntryHandler.FormatToggle("F5: Lock HP to 1", CheatMenuEntryHandler.GetValue(CheatKeys.LockHP1))
-               + " (May still cause a Game Over)";
-
-        public void KeybindBehaviour()
+        protected override void OnChanged(bool nowOn)
         {
-            CheatMenuEntryHandler.ToggleValue(CheatKeys.LockHP1);
             // Mutually exclusive with Max HP.
-            if (CheatMenuEntryHandler.GetValue(CheatKeys.MaxHP))
+            if (nowOn && CheatMenuEntryHandler.GetValue(CheatKeys.MaxHP))
                 CheatMenuEntryHandler.SetValue(CheatKeys.MaxHP, false);
         }
 
-        public bool IsKeybindTriggered => Keyboard.current.f5Key.wasPressedThisFrame;
+        public override bool IsKeybindTriggered => Keyboard.current.f5Key.wasPressedThisFrame;
     }
 
+    public class ToggleClothingEntry : ActionEntry
+    {
+        protected override string Label => "Toggle Clothing State";
+        protected override string Hotkey => "2";
+        protected override string ButtonText => "Toggle";
+        public override string Category => Categories.Player;
+
+        protected override void Run()
+        {
+            var durability = ManagerList.PlayerStatus.Durability;
+            durability.SetCurrentValue(durability.Current != 0 ? 0 : durability.Max);
+        }
+
+        public override bool IsKeybindTriggered => Keyboard.current.digit2Key.wasPressedThisFrame;
+    }
+
+    public class AddRelicsEntry : ActionEntry
+    {
+        protected override string Label => "Add 1000 Relics";
+        protected override string Hotkey => "F4";
+        protected override string ButtonText => "Add";
+        public override string Category => Categories.Player;
+
+        protected override void Run() => ManagerList.PlayerStatus.AddRelics(1000, false);
+
+        public override bool IsKeybindTriggered => Keyboard.current.f4Key.wasPressedThisFrame;
+    }
+
+    // ----- Combat -----------------------------------------------------------
+
+    public class AttackEntry : ToggleEntry
+    {
+        protected override string Label => "Instant Kill";
+        protected override string CheatKey => CheatKeys.AttackCheat;
+        protected override string Hotkey => "3";
+        public override string Category => Categories.Combat;
+        public override bool IsKeybindTriggered => Keyboard.current.digit3Key.wasPressedThisFrame;
+    }
+
+    public class BlockAllDamageEntry : ToggleEntry
+    {
+        protected override string Label => "Block All Damage";
+        protected override string CheatKey => CheatKeys.BlockAllDamage;
+        protected override string Hotkey => "5";
+        public override string Category => Categories.Combat;
+        public override bool IsKeybindTriggered => Keyboard.current.digit5Key.wasPressedThisFrame;
+    }
+
+    public class BlockBindEntry : ToggleEntry
+    {
+        protected override string Label => "Block Bind";
+        protected override string CheatKey => CheatKeys.BlockBind;
+        protected override string Hotkey => "1";
+        public override string Category => Categories.Combat;
+        public override bool IsKeybindTriggered => Keyboard.current.digit1Key.wasPressedThisFrame;
+    }
+
+    public class ReleaseBindEntry : ActionEntry
+    {
+        protected override string Label => "Release Current Bind";
+        protected override string Hotkey => "4";
+        protected override string ButtonText => "Release";
+        public override string Category => Categories.Combat;
+
+        protected override void Run() => ManagerList.Object.Lelia.Bind.ReleaseBind();
+
+        public override bool IsKeybindTriggered => Keyboard.current.digit4Key.wasPressedThisFrame;
+    }
+
+    public class ShowEnemyHealthEntry : ToggleEntry
+    {
+        protected override string Label => "Show Enemy Health";
+        protected override string CheatKey => CheatKeys.ShowEnemyHP;
+        protected override string Hotkey => "6";
+        public override string Category => Categories.Combat;
+        public override bool IsKeybindTriggered => Keyboard.current.digit6Key.wasPressedThisFrame;
+    }
+
+    public class KillAllEnemiesEntry : ActionEntry
+    {
+        protected override string Label => "Kill All Enemies";
+        protected override string Hotkey => "7";
+        protected override string ButtonText => "Kill All";
+        public override string Category => Categories.Combat;
+        protected override bool IsDanger => true;
+
+        protected override void Run()
+        {
+            foreach (EnemyObject enemy in CheatMenuBehaviour.EnemyObjectList)
+            {
+                if (enemy == null || enemy.DeadState != EnemyDead.State.Alive || enemy.HP == null)
+                    continue;
+                enemy.HP.SetCurrentValue(0);
+            }
+        }
+
+        public override bool IsKeybindTriggered => Keyboard.current.digit7Key.wasPressedThisFrame;
+    }
+
+    // ----- Items ------------------------------------------------------------
+
+    /// <summary>
+    /// Selector row: pick an item with the ◀ / ▶ buttons (or F7/F8) and grant one
+    /// copy with the ADD button (or F6).
+    /// </summary>
     public class AddItemEntry : ICheatMenuEntry
     {
         private int selectedItemIndex = 0;
@@ -73,113 +171,189 @@ namespace SiNiSistar2Mod.CheatMenu
         // range is [0, Length-2). This is why the wraparound math below stops short.
         private readonly Array itemEnumValues = Enum.GetValues(typeof(ItemID));
 
-        public string GetDrawText()
-            => $"F6: Add 1 ({(ItemID)itemEnumValues.GetValue(selectedItemIndex)}) - F7 Scroll Down - F8 Scroll Up";
+        public string Category => Categories.Items;
 
-        public void KeybindBehaviour()
+        private ItemID Selected => (ItemID)itemEnumValues.GetValue(selectedItemIndex);
+
+        private void ScrollItem(int dir)
         {
-            if (Keyboard.current.f6Key.wasPressedThisFrame)
+            selectedItemIndex += dir;
+            if (selectedItemIndex < 0)
+                selectedItemIndex = itemEnumValues.Length - 2;
+            else if (selectedItemIndex > itemEnumValues.Length - 2)
+                selectedItemIndex = 0;
+        }
+
+        private void AddSelected()
+        {
+            ItemID itemId = Selected;
+            try
             {
-                ItemID itemId = (ItemID)itemEnumValues.GetValue(selectedItemIndex);
                 ManagerList.PlayerStatus.InventoryHandler.AddItem(itemId, 1);
                 Plugin.Instance.Log.LogInfo($"Added 1 {itemId}");
             }
-            if (Keyboard.current.f7Key.wasPressedThisFrame)
+            catch (Exception ex)
             {
-                selectedItemIndex--;
-                if (selectedItemIndex < 0)
-                    selectedItemIndex = itemEnumValues.Length - 2;
+                Plugin.Instance.Log.LogWarning($"Add Item ({itemId}): {ex.GetType().Name}: {ex.Message}");
             }
-            if (Keyboard.current.f8Key.wasPressedThisFrame)
-            {
-                selectedItemIndex++;
-                if (selectedItemIndex > itemEnumValues.Length - 2)
-                    selectedItemIndex = 0;
-            }
+        }
+
+        public float DrawRow(Rect area, CheatMenuTheme theme)
+        {
+            const float h = 30f;
+            var row = new Rect(area.x, area.y + 2f, area.width, h);
+
+            float addW = 62f, arrow = 28f;
+            var add  = new Rect(row.xMax - addW, row.y + (h - CheatMenuTheme.BtnH) / 2f, addW, CheatMenuTheme.BtnH);
+            var next = new Rect(add.x - CheatMenuTheme.Gap - arrow, add.y, arrow, CheatMenuTheme.BtnH);
+            var prev = new Rect(area.x, add.y, arrow, CheatMenuTheme.BtnH);
+            var name = new Rect(prev.xMax + 4f, row.y, next.x - 4f - (prev.xMax + 4f), h);
+
+            theme.ListBox(name);
+            var label = new Rect(name.x + 8f, name.y, name.width - 16f, name.height);
+            GUI.Label(label, $"<b>{Selected}</b>", theme.Label);
+
+            if (theme.SmallButton(prev, "<")) ScrollItem(-1);
+            if (theme.SmallButton(next, ">")) ScrollItem(+1);
+            if (theme.PrimaryButton(add, "ADD")) AddSelected();
+
+            return h + 4f;
         }
 
         public bool IsKeybindTriggered =>
             Keyboard.current.f6Key.wasPressedThisFrame ||
             Keyboard.current.f7Key.wasPressedThisFrame ||
             Keyboard.current.f8Key.wasPressedThisFrame;
+
+        public void KeybindBehaviour()
+        {
+            if (Keyboard.current.f6Key.wasPressedThisFrame) AddSelected();
+            if (Keyboard.current.f7Key.wasPressedThisFrame) ScrollItem(-1);
+            if (Keyboard.current.f8Key.wasPressedThisFrame) ScrollItem(+1);
+        }
     }
 
+    // ----- Abnormal Status --------------------------------------------------
+
     /// <summary>
-    /// Enable/disable Abnormal Statuses on the player.
-    /// F9       — toggle the selected status on/off
-    /// F10/F11  — scroll selection
-    /// Shift+F10/F11 — for statuses with MaxLevel &gt; 1, decrement / increment the level
+    /// Scrollable list of every abnormal status. Each row has an ON/OFF switch;
+    /// statuses with more than one level get - / + buttons to adjust the level.
+    /// Keyboard fallback: F9 toggles the highlighted row, F10/F11 move the
+    /// highlight, Shift+F10/F11 adjust its level.
     /// </summary>
     public class AbnormalEntry : ICheatMenuEntry
     {
         // Index 0 of the AbnormalType enum is a sentinel (None), so we start at 1.
         private int selectedAbnormalIndex = 1;
         private readonly Array abnormalEnumValues = Enum.GetValues(typeof(AbnormalType));
+        private int _page;
 
-        private AbnormalType SelectedType => (AbnormalType)abnormalEnumValues.GetValue(selectedAbnormalIndex);
+        private const int PageSize = 6;
+        private const float ItemHeight = 28f;
 
-        public string GetDrawText()
+        public string Category => Categories.Status;
+
+        // IMGUI scroll views are stripped in this IL2CPP build, so the list is
+        // paginated with plain buttons instead of a GUI.BeginScrollView.
+        private int LastIndex => abnormalEnumValues.Length - 1; // inclusive, sentinel at 0 excluded
+        private int PageCount => Mathf.Max(1, Mathf.CeilToInt(LastIndex / (float)PageSize));
+
+        private AbnormalType TypeAt(int index) => (AbnormalType)abnormalEnumValues.GetValue(index);
+        private AbnormalType SelectedType => TypeAt(selectedAbnormalIndex);
+
+        public float DrawRow(Rect area, CheatMenuTheme theme)
         {
-            AbnormalType selectedType = SelectedType;
+            _page = Mathf.Clamp(_page, 0, PageCount - 1);
 
-            bool hasState = false;
-            int currentLevel = 0;
-            int maxLevel = 0;
+            var hint = new Rect(area.x, area.y, area.width, 16f);
+            GUI.Label(hint, "<size=10>Click a status to toggle • use - / + to change level</size>", theme.LabelDim);
 
-            // PlayerStatus / AbnormalList can be uninitialized while a scene is loading.
-            // Swallow narrowly and log at debug so it doesn't spam release logs every frame.
-            try
+            var box = new Rect(area.x, hint.yMax + 2f, area.width, PageSize * ItemHeight + 8f);
+            theme.ListBox(box);
+
+            AbnormalList list = SafeAbnormalList();
+            int first = 1 + _page * PageSize;
+            for (int slot = 0; slot < PageSize; slot++)
             {
-                if (ManagerList.PlayerStatus != null && ManagerList.PlayerStatus.AbnormalList != null)
+                int i = first + slot;
+                if (i > LastIndex)
+                    break;
+                var rowRect = new Rect(box.x + 4f, box.y + 4f + slot * ItemHeight, box.width - 8f, ItemHeight);
+                DrawStatusRow(theme, rowRect, i, TypeAt(i), list);
+            }
+
+            // Pager footer: ◀  page x / y  ▶
+            var footer = new Rect(area.x, box.yMax + 4f, area.width, 22f);
+            const float navW = 30f;
+            var prev = new Rect(footer.x, footer.y, navW, 22f);
+            var next = new Rect(footer.xMax - navW, footer.y, navW, 22f);
+            var pageLbl = new Rect(prev.xMax, footer.y, next.x - prev.xMax, 22f);
+
+            if (theme.SmallButton(prev, "<")) _page = (_page - 1 + PageCount) % PageCount;
+            GUI.Label(pageLbl, $"Page {_page + 1} / {PageCount}", theme.LabelDimCenter);
+            if (theme.SmallButton(next, ">")) _page = (_page + 1) % PageCount;
+
+            return (footer.yMax - area.y) + 4f;
+        }
+
+        private void DrawStatusRow(CheatMenuTheme theme, Rect r, int index, AbnormalType type, AbnormalList list)
+        {
+            bool selected = index == selectedAbnormalIndex;
+            if (selected)
+                theme.RowHighlight(r);
+
+            bool has = false;
+            int level = 0, maxLevel = 0;
+            if (list != null)
+            {
+                try
                 {
-                    hasState = ManagerList.PlayerStatus.AbnormalList.Has(selectedType);
-                    if (hasState)
+                    has = list.Has(type);
+                    if (has)
                     {
-                        AbnormalData data = ManagerList.PlayerStatus.AbnormalList.GetAbnormalData(selectedType);
-                        if (data != null)
-                        {
-                            currentLevel = data.Level;
-                            maxLevel = data.MaxLevel;
-                        }
+                        AbnormalData data = list.GetAbnormalData(type);
+                        if (data != null) { level = data.Level; maxLevel = data.MaxLevel; }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Plugin.Instance.Log.LogDebug($"AbnormalEntry.GetDrawText: {ex.GetType().Name}: {ex.Message}");
+                catch { /* status list can churn mid-scene; treat as inactive this frame */ }
             }
 
-            string status = hasState ? "Enabled" : "Disabled";
-            string levelInfo = (hasState && maxLevel > 1)
-                ? $" [Lv {currentLevel}/{maxLevel}, Shift+F10/F11 to adjust]"
-                : "";
-            return $"F9: ({selectedType}) {status}{levelInfo} - F10 Scroll Down - F11 Scroll Up (May break your game)";
+            var sw = new Rect(r.xMax - CheatMenuTheme.SwitchW - 4f,
+                              r.y + (r.height - CheatMenuTheme.SwitchH) / 2f,
+                              CheatMenuTheme.SwitchW, CheatMenuTheme.SwitchH);
+
+            // Level stepper (only for multi-level statuses that are active).
+            float rightEdge = sw.x;
+            if (has && maxLevel > 1)
+            {
+                const float stepW = 24f;
+                var plus = new Rect(sw.x - CheatMenuTheme.Gap - stepW, sw.y, stepW, CheatMenuTheme.SwitchH);
+                var lvl  = new Rect(plus.x - 44f, r.y, 44f, r.height);
+                var minus = new Rect(lvl.x - stepW, sw.y, stepW, CheatMenuTheme.SwitchH);
+
+                if (theme.SmallButton(minus, "-")) { selectedAbnormalIndex = index; AdjustLevel(type, -1); }
+                GUI.Label(lvl, $"<size=11>Lv {level}/{maxLevel}</size>", theme.LabelDim);
+                if (theme.SmallButton(plus, "+")) { selectedAbnormalIndex = index; AdjustLevel(type, +1); }
+                rightEdge = minus.x;
+            }
+
+            var nameRect = new Rect(r.x + 8f, r.y, rightEdge - r.x - 8f, r.height);
+            GUI.Label(nameRect, type.ToString(), has ? theme.Label : theme.LabelDim);
+
+            if (theme.Switch(sw, has))
+            {
+                selectedAbnormalIndex = index;
+                Toggle(type);
+            }
         }
 
-        public void KeybindBehaviour()
+        // ----- shared behaviour (keyboard + click) --------------------------
+
+        private static AbnormalList SafeAbnormalList()
         {
-            bool shift = Keyboard.current.shiftKey.isPressed;
-
-            if (Keyboard.current.f9Key.wasPressedThisFrame)
-                ToggleSelected();
-
-            if (Keyboard.current.f10Key.wasPressedThisFrame)
-            {
-                if (shift) AdjustLevel(-1);
-                else ScrollSelection(-1);
-            }
-
-            if (Keyboard.current.f11Key.wasPressedThisFrame)
-            {
-                if (shift) AdjustLevel(+1);
-                else ScrollSelection(+1);
-            }
+            try { return ManagerList.PlayerStatus?.AbnormalList; }
+            catch { return null; }
         }
-
-        public bool IsKeybindTriggered =>
-            Keyboard.current.f9Key.wasPressedThisFrame  ||
-            Keyboard.current.f10Key.wasPressedThisFrame ||
-            Keyboard.current.f11Key.wasPressedThisFrame;
 
         private void ScrollSelection(int direction)
         {
@@ -188,12 +362,19 @@ namespace SiNiSistar2Mod.CheatMenu
                 selectedAbnormalIndex = abnormalEnumValues.Length - 1;
             else if (selectedAbnormalIndex > abnormalEnumValues.Length - 1)
                 selectedAbnormalIndex = 1;
+
+            // Keep the highlighted row on the visible page.
+            _page = (selectedAbnormalIndex - 1) / PageSize;
         }
 
-        private void ToggleSelected()
+        private void Toggle(AbnormalType selectedType)
         {
-            AbnormalType selectedType = SelectedType;
-            AbnormalList abnormalList = ManagerList.PlayerStatus.AbnormalList;
+            AbnormalList abnormalList = SafeAbnormalList();
+            if (abnormalList == null)
+            {
+                Plugin.Instance.Log.LogInfo("Abnormal list is not available yet.");
+                return;
+            }
 
             if (abnormalList.Has(selectedType))
             {
@@ -220,9 +401,8 @@ namespace SiNiSistar2Mod.CheatMenu
             Plugin.Instance.Log.LogInfo($"Toggled {selectedType}");
         }
 
-        private void AdjustLevel(int direction)
+        private void AdjustLevel(AbnormalType selectedType, int direction)
         {
-            AbnormalType selectedType = SelectedType;
             AbnormalList abnormalList = ManagerList.PlayerStatus?.AbnormalList;
 
             if (abnormalList == null || !abnormalList.Has(selectedType))
@@ -247,84 +427,30 @@ namespace SiNiSistar2Mod.CheatMenu
 
             Plugin.Instance.Log.LogInfo($"{selectedType} level: {data.Level}/{data.MaxLevel}");
         }
-    }
 
-    public class BlockBindEntry : ICheatMenuEntry
-    {
-        public string GetDrawText()
-            => CheatMenuEntryHandler.FormatToggle("1: Block Bind", CheatMenuEntryHandler.GetValue(CheatKeys.BlockBind));
-
-        public void KeybindBehaviour() => CheatMenuEntryHandler.ToggleValue(CheatKeys.BlockBind);
-
-        public bool IsKeybindTriggered => Keyboard.current.digit1Key.wasPressedThisFrame;
-    }
-
-    public class ToggleClothingEntry : ICheatMenuEntry
-    {
-        public string GetDrawText() => "2: Toggle Clothing State";
+        public bool IsKeybindTriggered =>
+            Keyboard.current.f9Key.wasPressedThisFrame  ||
+            Keyboard.current.f10Key.wasPressedThisFrame ||
+            Keyboard.current.f11Key.wasPressedThisFrame;
 
         public void KeybindBehaviour()
         {
-            var durability = ManagerList.PlayerStatus.Durability;
-            durability.SetCurrentValue(durability.Current != 0 ? 0 : durability.Max);
-        }
+            bool shift = Keyboard.current.shiftKey.isPressed;
 
-        public bool IsKeybindTriggered => Keyboard.current.digit2Key.wasPressedThisFrame;
-    }
+            if (Keyboard.current.f9Key.wasPressedThisFrame)
+                Toggle(SelectedType);
 
-    public class AttackEntry : ICheatMenuEntry
-    {
-        public string GetDrawText()
-            => CheatMenuEntryHandler.FormatToggle("3: Instant Kill", CheatMenuEntryHandler.GetValue(CheatKeys.AttackCheat));
-
-        public void KeybindBehaviour() => CheatMenuEntryHandler.ToggleValue(CheatKeys.AttackCheat);
-
-        public bool IsKeybindTriggered => Keyboard.current.digit3Key.wasPressedThisFrame;
-    }
-
-    public class ReleaseBindEntry : ICheatMenuEntry
-    {
-        public string GetDrawText() => "4: Release current Bind";
-
-        public void KeybindBehaviour() => ManagerList.Object.Lelia.Bind.ReleaseBind();
-
-        public bool IsKeybindTriggered => Keyboard.current.digit4Key.wasPressedThisFrame;
-    }
-
-    public class BlockAllDamageEntry : ICheatMenuEntry
-    {
-        public string GetDrawText()
-            => CheatMenuEntryHandler.FormatToggle("5: Block All Damage", CheatMenuEntryHandler.GetValue(CheatKeys.BlockAllDamage));
-
-        public void KeybindBehaviour() => CheatMenuEntryHandler.ToggleValue(CheatKeys.BlockAllDamage);
-
-        public bool IsKeybindTriggered => Keyboard.current.digit5Key.wasPressedThisFrame;
-    }
-
-    public class ShowEnemyHealthEntry : ICheatMenuEntry
-    {
-        public string GetDrawText()
-            => CheatMenuEntryHandler.FormatToggle("6: Show Enemy Health", CheatMenuEntryHandler.GetValue(CheatKeys.ShowEnemyHP));
-
-        public void KeybindBehaviour() => CheatMenuEntryHandler.ToggleValue(CheatKeys.ShowEnemyHP);
-
-        public bool IsKeybindTriggered => Keyboard.current.digit6Key.wasPressedThisFrame;
-    }
-
-    public class KillAllEnemiesEntry : ICheatMenuEntry
-    {
-        public string GetDrawText() => "7: Kill All Enemies in current Level";
-
-        public void KeybindBehaviour()
-        {
-            foreach (EnemyObject enemy in CheatMenuBehaviour.EnemyObjectList)
+            if (Keyboard.current.f10Key.wasPressedThisFrame)
             {
-                if (enemy == null || enemy.DeadState != EnemyDead.State.Alive || enemy.HP == null)
-                    continue;
-                enemy.HP.SetCurrentValue(0);
+                if (shift) AdjustLevel(SelectedType, -1);
+                else ScrollSelection(-1);
+            }
+
+            if (Keyboard.current.f11Key.wasPressedThisFrame)
+            {
+                if (shift) AdjustLevel(SelectedType, +1);
+                else ScrollSelection(+1);
             }
         }
-
-        public bool IsKeybindTriggered => Keyboard.current.digit7Key.wasPressedThisFrame;
     }
 }
