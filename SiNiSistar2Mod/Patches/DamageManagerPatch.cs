@@ -18,20 +18,15 @@ namespace SiNiSistar2Mod.Patches
             ref DamageParameter inDamageParameter,
             DamageTargetType inDamageTargetType)
         {
-            if (DamageTargetType.Player == inDamageTargetType)
+            if (inDamageTargetType == DamageTargetType.Player)
             {
-                if (CheatMenuEntryHandler.GetValue("BlockAllDamage"))
-                {
-                    return false;
-                }
+                // Block incoming damage entirely.
+                return !CheatMenuEntryHandler.GetValue(CheatKeys.BlockAllDamage);
             }
-            else
-            {
-                if (CheatMenuEntryHandler.GetValue("AttackCheat"))
-                {
-                    inDamageParameter = DamageParameter.CreateCriticalDamage();
-                }
-            }
+
+            // Outgoing damage: upgrade to critical when Instant Kill is on.
+            if (CheatMenuEntryHandler.GetValue(CheatKeys.AttackCheat))
+                inDamageParameter = DamageParameter.CreateCriticalDamage();
 
             return true;
         }

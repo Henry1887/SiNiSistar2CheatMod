@@ -14,6 +14,7 @@ namespace SiNiSistar2Mod
         public static Plugin Instance { get; private set; }
 
         private Harmony _harmony;
+        private GameObject _menuObject;
 
         public override void Load()
         {
@@ -31,12 +32,12 @@ namespace SiNiSistar2Mod
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if (GameObject.Find("CheatMenu") == null)
-            {
-                var obj = new GameObject("CheatMenu");
-                obj.AddComponent<CheatMenuBehaviour>();
-                UnityEngine.Object.DontDestroyOnLoad(obj);
-            }
+            if (_menuObject != null)
+                return;
+
+            _menuObject = new GameObject("CheatMenu");
+            _menuObject.AddComponent<CheatMenuBehaviour>();
+            UnityEngine.Object.DontDestroyOnLoad(_menuObject);
         }
 
         public override bool Unload()

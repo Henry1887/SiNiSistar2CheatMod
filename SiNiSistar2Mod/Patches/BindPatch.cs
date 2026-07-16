@@ -11,7 +11,7 @@ namespace SiNiSistar2Mod.Patches
         [HarmonyPatch("StartBind")]
         public static bool StartBindPrefix()
         {
-            return !CheatMenuEntryHandler.GetValue("BlockBind");
+            return !CheatMenuEntryHandler.GetValue(CheatKeys.BlockBind);
         }
     }
 }

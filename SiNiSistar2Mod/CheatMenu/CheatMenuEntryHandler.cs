@@ -3,27 +3,22 @@
     public static class CheatMenuEntryHandler
     {
         private static readonly List<ICheatMenuEntry> CheatMenuEntries = new();
-        private static Dictionary<string, bool> EntryValues = new();
+        private static readonly Dictionary<string, bool> EntryValues = new();
 
         public static bool GetValue(string key, bool defaultValue = false)
+            => EntryValues.TryGetValue(key, out bool value) ? value : defaultValue;
+
+        public static void SetValue(string key, bool value) => EntryValues[key] = value;
+
+        public static bool ToggleValue(string key)
         {
-            if (EntryValues.TryGetValue(key, out bool value))
-            {
-                return value;
-            }
-            return defaultValue;
+            bool next = !GetValue(key);
+            EntryValues[key] = next;
+            return next;
         }
-        public static void SetValue(string key, bool value)
-        {
-            if (EntryValues.ContainsKey(key))
-            {
-                EntryValues[key] = value;
-            }
-            else
-            {
-                EntryValues.Add(key, value);
-            }
-        }
+
+        public static string FormatToggle(string label, bool state)
+            => $"{label} - {(state ? "Enabled" : "Disabled")}";
 
         public static void LoadEntries()
         {
@@ -47,11 +42,9 @@
 
         public static List<string> GetDrawBuffer()
         {
-            List<string> drawBuffer = new();
+            List<string> drawBuffer = new(CheatMenuEntries.Count);
             foreach (ICheatMenuEntry entry in CheatMenuEntries)
-            {
                 drawBuffer.Add(entry.GetDrawText());
-            }
             return drawBuffer;
         }
 
@@ -59,9 +52,8 @@
         {
             foreach (ICheatMenuEntry entry in CheatMenuEntries)
             {
-                if (!entry.IsKeybindTriggered)
-                    continue;
-                entry.KeybindBehaviour();
+                if (entry.IsKeybindTriggered)
+                    entry.KeybindBehaviour();
             }
         }
     }

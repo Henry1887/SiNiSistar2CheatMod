@@ -11,19 +11,14 @@ namespace SiNiSistar2Mod.Patches
         [HarmonyPatch("Update")]
         public static bool UpdatePrefix(PlayerStatusManager __instance)
         {
-            if (CheatMenuEntryHandler.GetValue("MaxHP"))
-            {
+            if (CheatMenuEntryHandler.GetValue(CheatKeys.MaxHP))
                 __instance.HP.SetCurrentValue(__instance.HP.Max);
-            }
-            else if (CheatMenuEntryHandler.GetValue("LockHP1"))
-            {
+            else if (CheatMenuEntryHandler.GetValue(CheatKeys.LockHP1))
                 __instance.HP.SetCurrentValue(1);
-            }
 
-            if (CheatMenuEntryHandler.GetValue("MaxMP"))
-            {
+            if (CheatMenuEntryHandler.GetValue(CheatKeys.MaxMP))
                 __instance.MP.SetCurrentValue(__instance.MP.Max);
-            }
+
             return true;
         }
     }

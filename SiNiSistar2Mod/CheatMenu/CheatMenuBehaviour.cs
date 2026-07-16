@@ -14,9 +14,12 @@ namespace SiNiSistar2Mod.CheatMenu
 
         private Rect windowRect = new Rect(10, 10, 500, 300);
 
-        private List<string> DrawEntries = new List<string>();
+        private List<string> DrawEntries = new();
 
-        public static List<EnemyObject> EnemyObjectList = new List<EnemyObject>();
+        public static List<EnemyObject> EnemyObjectList = new();
+
+        private GUIStyle _enemyHpStyle;
+        private Camera _cachedCamera;
 
         private void Start()
         {
@@ -26,25 +29,19 @@ namespace SiNiSistar2Mod.CheatMenu
 
         private void Update()
         {
-            foreach (EnemyObject enemy in EnemyObjectList)
-            {
-                if (enemy == null)
-                {
-                    EnemyObjectList.Remove(enemy);
-                    break;
-                }
-            }
+            EnemyObjectList.RemoveAll(e => e == null);
+
             CheatMenuEntryHandler.KeybindBehaviour();
         }
 
         private void OnGUI()
         {
-            if (CheatMenuEntryHandler.GetValue("ShowEnemyHP"))
-            {
+            if (CheatMenuEntryHandler.GetValue(CheatKeys.ShowEnemyHP))
                 DrawEnemyHealth();
-            }
-            if (!CheatMenuEntryHandler.GetValue("IsVisible", true))
+
+            if (!CheatMenuEntryHandler.GetValue(CheatKeys.IsVisible, true))
                 return;
+
             DrawEntries = CheatMenuEntryHandler.GetDrawBuffer();
             windowRect.height = boxInnerPadding * 2 + (DrawEntries.Count * lineHeight) + 20;
             windowRect = GUI.Window(0, windowRect, (GUI.WindowFunction)DrawCheatWindow, "Cheat Menu");
@@ -52,28 +49,38 @@ namespace SiNiSistar2Mod.CheatMenu
 
         private void DrawEnemyHealth()
         {
+            _enemyHpStyle ??= new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 14,
+                alignment = TextAnchor.MiddleCenter
+            };
+
+            // Camera.main can become null between scenes; refresh lazily.
+            if (_cachedCamera == null)
+                _cachedCamera = Camera.main;
+            if (_cachedCamera == null)
+                return;
+
             foreach (EnemyObject enemy in EnemyObjectList)
             {
-                if (enemy == null || enemy.DeadState != EnemyDead.State.Alive || enemy.HP == null) continue;
-                Vector3 screenPos = Camera.main.WorldToScreenPoint(enemy.transform.position);
+                if (enemy == null || enemy.DeadState != EnemyDead.State.Alive || enemy.HP == null)
+                    continue;
+
+                Vector3 screenPos = _cachedCamera.WorldToScreenPoint(enemy.transform.position);
+                if (screenPos.z < 0f)
+                    continue; // behind the camera — would render mirrored otherwise
+
                 string hpText = $"{enemy.HP.Current}/{enemy.HP.Max}";
+                Vector2 size = _enemyHpStyle.CalcSize(new GUIContent(hpText));
 
-                GUIStyle labelStyle = new GUIStyle(GUI.skin.label)
-                {
-                    fontSize = 14,
-                    alignment = TextAnchor.MiddleCenter
-                };
-                float textWidth = labelStyle.CalcSize(new GUIContent(hpText)).x;
-                float textHeight = labelStyle.CalcSize(new GUIContent(hpText)).y;
+                float boxW = size.x + 10f;
+                float boxH = size.y + 5f;
+                float x = screenPos.x - boxW / 2;
+                float y = Screen.height - screenPos.y - boxH - 50;
 
-                float boxWidth = textWidth + 10f;
-                float boxHeight = textHeight + 5f;
-
-                float x = screenPos.x - boxWidth / 2;
-                float y = Screen.height - screenPos.y - boxHeight - 50;
-
-                GUI.Box(new Rect(x, y, boxWidth, boxHeight), GUIContent.none);
-                GUI.Label(new Rect(x, y, boxWidth, boxHeight), hpText, labelStyle);
+                Rect r = new Rect(x, y, boxW, boxH);
+                GUI.Box(r, GUIContent.none);
+                GUI.Label(r, hpText, _enemyHpStyle);
             }
         }
 

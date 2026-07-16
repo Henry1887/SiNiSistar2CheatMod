@@ -14,7 +14,7 @@
 		<Nullable>disable</Nullable>
 		<WarningsAsErrors>false</WarningsAsErrors>
 		<GenerateDocumentationFile>false</GenerateDocumentationFile>
-		<OutputPath>G:\Games\SiNiSistar2_v1_2_1\BepInEx\plugins</OutputPath>
+		<OutputPath>D:\Games\SiNiSistar2_v1_3_1\BepInEx\plugins</OutputPath>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<Debuggable>false</Debuggable>
 		<TieredCompilation>false</TieredCompilation>
